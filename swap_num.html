@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Sliding Puzzle Game</title>
+    <style>
+     
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    margin: 0;
+    font-family: Arial, sans-serif;
+}
+
+.container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+#startBtn {
+    font-size: 24px;
+    padding: 10px 20px;
+    border-radius: 5px;
+    background-color: #2196f3;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+#startBtn:hover {
+    background-color: #1976d2;
+}
+
+#puzzle {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    grid-template-rows: repeat(4, 1fr);
+    width: 400px;
+    height: 400px;
+    margin-top: 20px;
+}
+
+.square {
+    border: 1px solid black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    cursor: pointer;
+    box-sizing: border-box;
+}
+
+.square.empty {
+    visibility: hidden;
+}
+
+
+    </style>
+  </head>
+
+  <body>
+    <div class="container">
+      <button id="startBtn">Start</button>
+      <div class="puzzle" id="puzzle" style="display: none">
+    
+      </div>
+    </div>
+
+    <script>
+      // Function to create the puzzle grid
+      function createPuzzle() {
+        var numbers = Array.from({ length: 15 }, (_, index) => index + 1);
+        numbers.sort(() => Math.random() - 0.5); // Shuffle the numbers
+
+        var puzzle = document.getElementById("puzzle");
+        for (var i = 0; i < numbers.length; i++) {
+          var square = document.createElement("div");
+          square.classList.add("square");
+          square.textContent = numbers[i];
+          square.addEventListener("click", moveSquare);
+          puzzle.appendChild(square);
+        }
+
+        var emptySquare = document.createElement("div");
+        emptySquare.classList.add("square");
+        puzzle.appendChild(emptySquare);
+      }
+
+      // Function to handle square movements
+      function moveSquare() {
+        var emptySquare = document.querySelector(".square:empty");
+        var currentSquare = this;
+
+        if (isAdjacent(emptySquare, currentSquare)) {
+          swap(emptySquare, currentSquare);
+          if (isSolved()) {
+            setTimeout(
+              () => alert("Congratulations! You solved the puzzle."),
+              100
+            );
+          }
+        }
+      }
+
+      // Function to check if two squares are adjacent
+      function isAdjacent(square1, square2) {
+        var index1 = Array.from(square1.parentNode.children).indexOf(square1);
+        var index2 = Array.from(square2.parentNode.children).indexOf(square2);
+
+        return (
+          Math.abs(index1 - index2) === 1 || Math.abs(index1 - index2) === 4
+        );
+      }
+
+      // Function to swap two squares
+      function swap(square1, square2) {
+        var tempText = square1.textContent;
+        square1.textContent = square2.textContent;
+        square2.textContent = tempText;
+      }
+
+      // Function to check if the puzzle is solved
+      function isSolved() {
+        var squares = document.getElementsByClassName("square");
+        for (var i = 0; i < squares.length - 1; i++) {
+          if (parseInt(squares[i].textContent) !== i + 1) {
+            return false;
+          }
+        }
+        return true;
+      }
+
+    //   // Function to start the game
+    //   function startGame() {
+    //     var startBtn = document.getElementById("startBtn");
+    //     var puzzle = document.getElementById("puzzle");
+    //     startBtn.style.display = "none";
+    //     puzzle.style.display = "grid";
+    //     createPuzzle();
+    //   }
+
+    //     // Add event listener to the start button
+    //     var startBtn = document.getElementById("startBtn");
+    //     startBtn.addEventListener("click", startGame);
+
+    // Function to start the game
+        function startGame() {
+            var startBtn = document.getElementById("startBtn");
+            var puzzle = document.getElementById("puzzle");
+            startBtn.style.display = "none";
+            puzzle.style.display = "grid";
+            createPuzzle();
+
+            var moveCount = 0; // Variable to keep track of the number of moves
+
+            // Add event listener to each square for move count
+            var squares = document.getElementsByClassName("square");
+            for (var i = 0; i < squares.length; i++) {
+                squares[i].addEventListener("click", function () {
+                    if (!puzzleSolved && moveCount < 20) { // Check if puzzle is not solved and move count is less than 20
+                        moveSquare(this);
+                        moveCount++;
+                        if (moveCount === 20 && !isSolved()) {
+                            setTimeout(() => {
+                                alert("Oops! You lose the game.");
+                                tryAgain();
+                            }, 100);
+                        }
+                    }
+                });
+            }
+        }
+
+        // Function to start the game
+            function startGame() {
+                var startBtn = document.getElementById("startBtn");
+                var puzzle = document.getElementById("puzzle");
+                startBtn.style.display = "none";
+                puzzle.style.display = "grid";
+                createPuzzle();
+
+                var clickCount = 0; // Variable to keep track of the number of clicks
+
+                // Add event listener to each square for click count
+                var squares = document.getElementsByClassName("square");
+                for (var i = 0; i < squares.length; i++) {
+                    squares[i].addEventListener("click", function () {
+                        clickCount++;
+                        if (clickCount === 20) {
+                            puzzle.style.display = "none";
+                            setTimeout(() => {
+                                alert("Oops! You lose the game.");
+                                tryAgain();
+                            }, 100);
+                        }
+                    });
+                }
+            }
+
+            // Function to try the game again
+            function tryAgain() {
+                var startBtn = document.getElementById("startBtn");
+                var puzzle = document.getElementById("puzzle");
+                puzzle.innerHTML = "";
+                startBtn.style.display = "block";
+            }
+
+// Rest of the code remains the same...
+
+
+
+            // Add event listener to the start button
+            var startBtn = document.getElementById("startBtn");
+            startBtn.addEventListener("click", startGame);
+
+   
+
+    </script>
+  </body>
+</html>
